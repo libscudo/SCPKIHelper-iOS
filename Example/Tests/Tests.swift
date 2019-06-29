@@ -29,18 +29,40 @@ class SCKPIHelperSpec: QuickSpec {
             }
             
             it("can create a private / public key pair, save it into the Keychain, and recover it using SCKeychainManager") {
-                let spec = SCPKIKeySpec.common
+                let spec = SCPKIKeySpec.from(SCPKIKeySpec.common)
                 spec.storeInKeychain = true
                 waitUntil (timeout: 5) { done in
-                    SCPKIHelper.shared.generateKeyPair(with: spec, identifiedBy: "test_key_2") { _, _, error in
+                    SCPKIHelper.shared.generateKeyPair(with: spec, identifiedBy: "test_key_2") { publicKey, privateKey, error in
+                        expect(publicKey).notTo(be(nil))
+                        expect(privateKey).notTo(be(nil))
                         expect(error).to(beNil())
                         
+                        if let pub = publicKey {
+                            if #available(iOS 10.0, *) {
+                                let pubAttributes = SecKeyCopyAttributes(pub) as! [String: Any]
+                                
+                                // is RSA?
+                                let type = Int(pubAttributes[kSecAttrKeyType as String] as! String)
+                                let rsaType = Int(kSecAttrKeyTypeRSA as String)
+                                expect(type).notTo(beNil())
+                                expect(type).to(equal(rsaType))
+                                
+                                // is a Pubic Key?
+                                let keyType = Int(pubAttributes[kSecAttrKeyClass as String] as! String)
+                                let pubKeyType = Int(kSecAttrKeyClassPublic as String)
+                                expect(keyType).notTo(beNil())
+                                expect(keyType).to(equal(pubKeyType))
+                                
+                                // Check key size
+                                let keySize = pubAttributes[kSecAttrKeySizeInBits as String] as! Int
+                                expect(keySize).notTo(beNil())
+                                expect(keySize).to(equal(4096))
+                            }
+                        }
                         done()
                     }
                 }
             }
-            
-            
         }
     }
 }
