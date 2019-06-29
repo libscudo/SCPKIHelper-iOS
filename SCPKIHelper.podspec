@@ -9,34 +9,20 @@
 Pod::Spec.new do |s|
   s.name             = 'SCPKIHelper'
   s.version          = '0.1.0'
-  s.summary          = 'A short description of SCPKIHelper.'
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
-
+  s.summary          = 'A set of functions to manage Public Key Infraestructure objects.'
+  s.swift_versions   = '5.0'
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+A set of functions to manage Public Key Infraestructure objects, like: Creating public and private keys, store and retrieve them. Generate CSR, verify signatures, encrypt and decrypt.                       
                        DESC
 
-  s.homepage         = 'https://github.com/eaceto/SCPKIHelper'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
+  s.homepage         = 'https://github.com/libscudo/SCPKIHelper-iOS'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'eaceto' => 'ezequiel.aceto@gmail.com' }
-  s.source           = { :git => 'https://github.com/eaceto/SCPKIHelper.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.source           = { :git => 'https://github.com/libscudo/SCPKIHelper-iOS.git', :tag => s.version.to_s }
+  s.social_media_url = 'https://twitter.com/eaceto_public'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '10.0'
 
   s.source_files = 'SCPKIHelper/Classes/**/*'
   
-  # s.resource_bundles = {
-  #   'SCPKIHelper' => ['SCPKIHelper/Assets/*.png']
-  # }
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
 end
