@@ -34,7 +34,7 @@ open class SCPKIHelper : NSObject {
 }
 
 // Generate key pair
-extension SCPKIHelper {
+public extension SCPKIHelper {
     func generateKeyPair(with spec : SCPKIKeySpec, identifiedBy identifier: String, _ completion:  (@escaping (_ publicKey : SecKey?, _ privateKey : SecKey?, _ error: Error?) -> Void)) {
         
         let keyPairIdentifier = "\(self.serviceName).\(identifier)"
