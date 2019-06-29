@@ -38,10 +38,17 @@ public extension SCPKIHelper {
     func generateKeyPair(with spec : SCPKIKeySpec, identifiedBy identifier: String, _ completion:  (@escaping (_ publicKey : SecKey?, _ privateKey : SecKey?, _ error: Error?) -> Void)) {
         
         let keyPairIdentifier = "\(self.serviceName).\(identifier)"
+        let accessLevel = spec.accessOnlyWhenUnlocked ? kSecAttrAccessibleWhenUnlocked : kSecAttrAccessibleAfterFirstUnlock
+        
+        let privateKeyAccess = SecAccessControlCreateWithFlags(nil,
+                                                               accessLevel,
+                                                               [.userPresence, .privateKeyUsage],
+                                                               nil)!
         
         let privateKeySpec: [CFString : Any] = [
             kSecAttrIsPermanent: spec.storeInKeychain,
-            kSecAttrApplicationTag: keyPairIdentifier
+            kSecAttrApplicationTag: keyPairIdentifier,
+            kSecAttrAccessControl: privateKeyAccess
         ]
         
         let publicKeyParams: [CFString : Any] = [

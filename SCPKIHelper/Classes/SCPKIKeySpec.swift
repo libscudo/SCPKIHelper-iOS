@@ -14,6 +14,8 @@ open class SCPKIKeySpec {
     private(set) var keyType : CFString
     private(set) var sizeInBits : Int
     private(set) var padding : SecPadding
+    
+    var accessOnlyWhenUnlocked = true
     var storeInKeychain = false
     
     init(keyType : CFString, sizeInBits: Int, padding: SecPadding) {
