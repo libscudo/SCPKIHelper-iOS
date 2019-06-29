@@ -86,6 +86,7 @@ class SCKPIHelperSpec: QuickSpec {
                                 expect(keySize).to(equal(4096))
                             }
                         }
+
                         done()
                     }
                 }
