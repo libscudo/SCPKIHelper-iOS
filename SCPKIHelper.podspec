@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SCPKIHelper'
-  s.version          = '0.1.1'
+  s.version          = '0.1.2'
   s.summary          = 'A set of functions to manage Public Key Infraestructure objects.'
   s.swift_versions   = '5.0'
   s.description      = <<-DESC
