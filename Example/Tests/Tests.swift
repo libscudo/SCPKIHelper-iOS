@@ -29,18 +29,15 @@ class SCKPIHelperSpec: QuickSpec {
             }
             
             it("can create a private / public key pair, save it into the Keychain, and recover it using SCKeychainManager") {
-                let spec = SCPKIKeySpec.common
+                let spec = SCPKIKeySpec.from(SCPKIKeySpec.common)
                 spec.storeInKeychain = true
                 waitUntil (timeout: 5) { done in
                     SCPKIHelper.shared.generateKeyPair(with: spec, identifiedBy: "test_key_2") { _, _, error in
                         expect(error).to(beNil())
-                        
                         done()
                     }
                 }
             }
-            
-            
         }
     }
 }
