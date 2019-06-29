@@ -1,0 +1,22 @@
+{
+  "name": "SCPKIHelper",
+  "version": "0.1.0",
+  "summary": "A short description of SCPKIHelper.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/eaceto/SCPKIHelper",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "eaceto": "ezequiel.aceto@gmail.com"
+  },
+  "source": {
+    "git": "https://github.com/eaceto/SCPKIHelper.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "SCPKIHelper/Classes/**/*"
+}
