@@ -22,4 +22,8 @@ open class SCPKIKeySpec {
         self.padding = padding
     }
     
+    public static func from(_ sourceSpec : SCPKIKeySpec) -> SCPKIKeySpec {
+        return SCPKIKeySpec(keyType: sourceSpec.keyType, sizeInBits: sourceSpec.sizeInBits, padding: sourceSpec.padding)
+    }
+    
 }
