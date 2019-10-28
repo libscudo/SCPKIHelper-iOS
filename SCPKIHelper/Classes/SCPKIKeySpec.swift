@@ -14,9 +14,9 @@ open class SCPKIKeySpec {
     private(set) var keyType : CFString
     private(set) var sizeInBits : Int
     private(set) var padding : SecPadding
-    var storeInKeychain = false
+    private(set) var storeInKeychain = false
     
-    init(keyType : CFString, sizeInBits: Int, padding: SecPadding) {
+    public init(keyType : CFString, sizeInBits: Int, padding: SecPadding) {
         self.keyType = keyType
         self.sizeInBits = sizeInBits
         self.padding = padding
@@ -24,6 +24,11 @@ open class SCPKIKeySpec {
     
     public static func from(_ sourceSpec : SCPKIKeySpec) -> SCPKIKeySpec {
         return SCPKIKeySpec(keyType: sourceSpec.keyType, sizeInBits: sourceSpec.sizeInBits, padding: sourceSpec.padding)
+    }
+    
+    public func secureInKeychain(_ store: Bool) -> SCPKIKeySpec {
+        storeInKeychain = store
+        return self
     }
     
 }
