@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SCPKIHelper'
-  s.version          = '0.1.1'
+  s.version          = '0.2.0'
   s.summary          = 'A set of functions to manage Public Key Infraestructure objects.'
   s.swift_versions   = '5.0'
   s.description      = <<-DESC
@@ -21,7 +21,7 @@ A set of functions to manage Public Key Infraestructure objects, like: Creating 
   s.source           = { :git => 'https://github.com/libscudo/SCPKIHelper-iOS.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/eaceto_public'
 
-  s.ios.deployment_target = '10.0'
+  s.ios.deployment_target = '11.0'
 
   s.source_files = 'SCPKIHelper/Classes/**/*'
   
