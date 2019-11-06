@@ -18,7 +18,7 @@ class SCKPIHelperSpec: QuickSpec {
 
             it("can create a private / public key pair with default specification") {
                 let spec = SCPKIKeySpec.common
-                waitUntil (timeout: 10) { done in
+                waitUntil (timeout: 60) { done in
                     SCPKIHelper.shared.generateKeyPair(with: spec, identifiedBy: "test_key_1") { publicKey, privateKey, error in
                         expect(publicKey).notTo(be(nil))
                         expect(privateKey).notTo(be(nil))
@@ -51,14 +51,11 @@ class SCKPIHelperSpec: QuickSpec {
                 }
             }
             
-            it("can create a private / public key pair, save it into the Keychain, and recover it using SCKeychainManager") {
+            it("can create a private / public key pair, save it into the Keychain, and recover it.") {
                 let spec = SCPKIKeySpec.from(SCPKIKeySpec.common)
-                spec.storeInKeychain = true
+                _ = spec.secureInKeychain(true)
                 
-                //SCPKIKeySpec.common.storeInKeychain untouched
-                expect(SCPKIKeySpec.common.storeInKeychain).to(equal(false))
-                
-                waitUntil (timeout: 10) { done in
+                waitUntil (timeout: 60) { done in
                     SCPKIHelper.shared.generateKeyPair(with: spec, identifiedBy: "test_key_2") { publicKey, privateKey, error in
                         expect(publicKey).notTo(be(nil))
                         expect(privateKey).notTo(be(nil))
@@ -74,7 +71,7 @@ class SCKPIHelperSpec: QuickSpec {
                                 expect(type).notTo(beNil())
                                 expect(type).to(equal(rsaType))
                                 
-                                // is a Pubic Key?
+                                // is a Public Key?
                                 let keyType = Int(pubAttributes[kSecAttrKeyClass as String] as! String)
                                 let pubKeyType = Int(kSecAttrKeyClassPublic as String)
                                 expect(keyType).notTo(beNil())
@@ -84,10 +81,17 @@ class SCKPIHelperSpec: QuickSpec {
                                 let keySize = pubAttributes[kSecAttrKeySizeInBits as String] as! Int
                                 expect(keySize).notTo(beNil())
                                 expect(keySize).to(equal(4096))
+                                
+                                
+                                SCPKIHelper.shared.getKeyPair(with: spec, identifiedBy: "test_key_2") { publicKey2, privateKey2, error2 in
+                                    if publicKey2 != nil && privateKey2 != nil {
+                                        done()
+                                    }
+                                }
+                            } else {
+                                done()
                             }
                         }
-
-                        done()
                     }
                 }
             }
