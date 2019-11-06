@@ -19,7 +19,7 @@ A set of functions to manage Public Key Infraestructure objects, like: Creating 
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'eaceto' => 'ezequiel.aceto@gmail.com' }
   s.source           = { :git => 'https://github.com/libscudo/SCPKIHelper-iOS.git', :tag => s.version.to_s }
-  s.social_media_url = 'https://twitter.com/eaceto_public'
+  s.social_media_url = 'https://twitter.com/eaceto_pub'
 
   s.ios.deployment_target = '11.0'
 
