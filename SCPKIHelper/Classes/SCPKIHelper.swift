@@ -11,9 +11,11 @@ import LocalAuthentication
 public enum SCPKIError : Error {
     case itemAlreadyExistInKeychain(String)
     case keyNotFound(String)
+    case certificateNotFound(String)
     case couldNotCreateKeyPair(String)
     case couldNotRetrievePublicKey(String)
     case couldNotRetrievePrivateKey(String)
+    case couldNotRetrieveCertificate(String)
 }
 
 open class SCPKIHelper : NSObject {
@@ -98,6 +100,37 @@ public extension SCPKIHelper {
         }
     }
     
+    func getCertificate(identifiedBy identifier: String, _ completion: (@escaping (_ certificate : SecCertificate?, _ error: Error?) -> Void)) {
+        
+        let certificateIdentifier = "\(self.serviceName).\(identifier)"
+        
+        let certificateParams: [CFString: Any] = [
+            kSecClass: kSecClassCertificate,
+            kSecAttrLabel: "\(certificateIdentifier).certificate",
+            kSecUseAuthenticationContext: authenticationContext,
+            kSecUseOperationPrompt: authenticationContext.localizedReason,
+            kSecUseAuthenticationUI: kSecUseAuthenticationUIAllow,
+            kSecMatchLimit: kSecMatchLimitOne,
+            kSecReturnRef: true]
+        
+        DispatchQueue.global().async {
+            var result : AnyObject?
+
+            let status = SecItemCopyMatching(certificateParams as CFDictionary, &result)
+            
+            if status == errSecSuccess {
+                guard let certificate = result as! SecCertificate? else {
+                    completion(nil, SCPKIError.couldNotRetrieveCertificate(certificateIdentifier))
+                    return
+                }
+                
+                completion(certificate, nil)
+                return
+            }
+            completion(nil, SCPKIError.certificateNotFound(certificateIdentifier))
+        }
+    }
+    
     func getPrivateKey(with spec : SCPKIKeySpec, identifiedBy identifier: String, _ completion: (@escaping (_ privateKey : SecKey?, _ error: Error?) -> Void)) {
     
         let keyPairIdentifier = "\(self.serviceName).\(identifier)"
@@ -124,7 +157,7 @@ public extension SCPKIHelper {
                     return
                 }
                 
-                completion( privateKey, nil)
+                completion(privateKey, nil)
                 return
             }
             completion(nil, SCPKIError.keyNotFound(keyPairIdentifier))
