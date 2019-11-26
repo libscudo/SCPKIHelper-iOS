@@ -54,7 +54,7 @@ public extension SCPKIHelper {
     private func defaultSecAccessControl(storeInKeychain: Bool) -> SecAccessControl {
         var accessControlError: Unmanaged<CFError>?
         
-        let accessControl = SecAccessControlCreateWithFlags(nil, kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, .biometryAny, &accessControlError)
+        let accessControl = SecAccessControlCreateWithFlags(nil, kSecAttrAccessibleWhenUnlockedThisDeviceOnly, [.biometryAny, .or, .devicePasscode], &accessControlError)
                
         precondition(accessControl != nil, "SecAccessControlCreateWithFlags failed")
         return accessControl!
@@ -107,9 +107,6 @@ public extension SCPKIHelper {
         let certificateParams: [CFString: Any] = [
             kSecClass: kSecClassCertificate,
             kSecAttrLabel: "\(certificateIdentifier).certificate",
-            kSecUseAuthenticationContext: authenticationContext,
-            kSecUseOperationPrompt: authenticationContext.localizedReason,
-            kSecUseAuthenticationUI: kSecUseAuthenticationUIAllow,
             kSecMatchLimit: kSecMatchLimitOne,
             kSecReturnRef: true]
         
@@ -124,7 +121,7 @@ public extension SCPKIHelper {
                     return
                 }
                 
-                completion(certificate, nil)
+                completion(certificate as! SecCertificate, nil)
                 return
             }
             completion(nil, SCPKIError.certificateNotFound(certificateIdentifier))
@@ -138,26 +135,25 @@ public extension SCPKIHelper {
         let privateKeyParams: [CFString: Any] = [
                     kSecAttrIsPermanent: spec.storeInKeychain,
                     kSecAttrApplicationTag: "\(keyPairIdentifier).private",
+                    kSecAttrKeyClass: kSecAttrKeyClassPrivate,
+                    kSecAttrKeyType: spec.keyType,
                     kSecClass: kSecClassKey,
-                    kSecUseAuthenticationContext: authenticationContext,
-                    kSecUseOperationPrompt: authenticationContext.localizedReason,
-                    kSecUseAuthenticationUI: kSecUseAuthenticationUIAllow,
                     kSecMatchLimit: kSecMatchLimitOne,
-                    kSecReturnData: true]
+                    kSecReturnRef: true]
 
         
         DispatchQueue.global().async {
-            var result : AnyObject?
+            var result : CFTypeRef?
 
             let status = SecItemCopyMatching(privateKeyParams as CFDictionary, &result)
             
             if status == errSecSuccess {
-                guard let privateKey = result as! SecKey? else {
+                guard let privateKey = result else {
                     completion(nil, SCPKIError.couldNotRetrievePrivateKey(keyPairIdentifier))
                     return
                 }
                 
-                completion(privateKey, nil)
+                completion(privateKey as! SecKey, nil)
                 return
             }
             completion(nil, SCPKIError.keyNotFound(keyPairIdentifier))
@@ -171,24 +167,23 @@ public extension SCPKIHelper {
         let publicKeyParams: [CFString: Any] = [
                     kSecAttrIsPermanent: spec.storeInKeychain,
                     kSecAttrApplicationTag: "\(keyPairIdentifier).public",
+                    kSecAttrKeyClass: kSecAttrKeyClassPublic,
+                    kSecAttrKeyType: spec.keyType,
                     kSecClass: kSecClassKey,
-                    kSecUseAuthenticationContext: authenticationContext,
-                    kSecUseOperationPrompt: authenticationContext.localizedReason,
-                    kSecUseAuthenticationUI: kSecUseAuthenticationUIAllow,
                     kSecMatchLimit: kSecMatchLimitOne,
-                    kSecReturnData: true]
+                    kSecReturnRef: true]
        
         DispatchQueue.global().async {
-            var result : AnyObject?
+            var result : CFTypeRef?
 
             let status = SecItemCopyMatching(publicKeyParams as CFDictionary, &result)
             
             if status == errSecSuccess {
-                guard let publicKey = result as! SecKey? else {
+                guard let publicKey = result else {
                     completion(nil, SCPKIError.couldNotRetrievePublicKey(keyPairIdentifier))
                     return
                 }
-                completion(publicKey, nil)
+                completion(publicKey as! SecKey, nil)
                 return
             }
             completion(nil, SCPKIError.keyNotFound(keyPairIdentifier))
@@ -213,8 +208,7 @@ public extension SCPKIHelper {
             kSecPublicKeyAttrs: publicKeyParams,
             kSecPrivateKeyAttrs: privateKeySpec,
             kSecAttrKeyType: spec.keyType,
-            kSecAttrKeySizeInBits: spec.sizeInBits,
-            kSecAttrAccessControl: defaultSecAccessControl(storeInKeychain: spec.storeInKeychain)
+            kSecAttrKeySizeInBits: spec.sizeInBits
         ]
         
         // private / public key generation takes a lot of time, so this operation must be perform in another thread.
